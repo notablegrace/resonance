@@ -10,8 +10,8 @@ require("dotenv").config();
 
 
 // CONFIG
-const oscTargetIP = '192.168.1.176' // Make this IP of machine I'm sending to
-const oscTargetPort = 3333
+const oscTargetIP = '192.168.1.163' // Make this IP of machine I'm sending to
+const oscTargetPort = 6666
 const refreshRate = 60 // How many times to send new values per second
 const maxRotationSpeed = 0.5 // Slowed down per Calm value
 
@@ -26,7 +26,8 @@ let currentFocus = 0
 
 let badSignal = false
 
-let animFrame = 0 // On a scale of 0 to refreshRate
+let calmAnimFrame = 0 // On a scale of 0 to refreshRate
+let focusAnimFrame = 0 // On a scale of 0 to refreshRate
 let currentRotation = 0 // Scale of 0-100
 
 const client = new Client(oscTargetIP, oscTargetPort); 
@@ -91,9 +92,9 @@ const main = async () => {
 
     lastCalm = currentCalm
     nextCalm = parseFloat(calm.probability.toFixed(4))
-    // animFrame = 0
+    calmAnimFrame = 0
 
-    client.send('/beyond/master/livecontrol/fx4action', (-1 * (calm.probability.toFixed(3)*100)) + 100, () => {
+    client.send('/calm', (-1 * (calm.probability.toFixed(3)*100)) + 100, () => {
       // client.close();
     });
 
@@ -103,10 +104,10 @@ const main = async () => {
 
     lastFocus = currentFocus
     nextFocus = parseFloat(focus.probability.toFixed(4))
-    animFrame = 0
+    focusAnimFrame = 0
     // console.log("from ", lastFocus, " to ", nextFocus)
 
-    client.send('/beyond/master/livecontrol/size', focus.probability.toFixed(3)*200, () => {
+    client.send('/focus', focus.probability.toFixed(3)*200, () => {
       // client.close();
     });
   });
@@ -117,22 +118,28 @@ const main = async () => {
   // Set an interval to send new data per refresh rate
   var mainInterval = setInterval(() => {
     // Increment frame count for animation
-    animFrame <= refreshRate ? animFrame++ : null
+    calmAnimFrame <= refreshRate ? calmAnimFrame++ : null
+    focusAnimFrame <= refreshRate ? focusAnimFrame++ : null
 
     // Get absolute percent of current animation
-    const currentAnimProgress = (animFrame/refreshRate).toFixed(3)
+    const currentCalmAnimProgress = (calmAnimFrame/refreshRate).toFixed(3)
+    const currentFocusAnimProgress = (focusAnimFrame/refreshRate).toFixed(3)
 
     // Turn absolute percent into nicely animated percent
-    const smoothedAnimProgress = easeInOutSine(currentAnimProgress)
+    const smoothedCalmAnimProgress = easeInOutSine(currentCalmAnimProgress)
+    const smoothedFocusAnimProgress = easeInOutSine(currentFocusAnimProgress)
+
 
     // Turned smoothed progress percent into absolute number
     const totalChangeInCalm = nextCalm - lastCalm
     const totalChangeInFocus = nextFocus - lastFocus
 
-    const animChangeInCalm = totalChangeInCalm * smoothedAnimProgress
-    const animChangeInFocus = totalChangeInFocus * smoothedAnimProgress
+    const animChangeInCalm = totalChangeInCalm * smoothedCalmAnimProgress
+    const animChangeInFocus = totalChangeInFocus * smoothedFocusAnimProgress
 
-    currentCalm = parseFloat((animChangeInCalm + parseFloat(lastCalm)).toFixed(4))
+    currentCalm = currentCalm != nextCalm 
+      ? parseFloat((animChangeInCalm + parseFloat(lastCalm)).toFixed(4))
+      : currentCalm
     currentFocus = currentFocus != nextFocus 
       ? parseFloat((animChangeInFocus + parseFloat(lastFocus)).toFixed(4))
       : currentFocus
@@ -149,10 +156,10 @@ const main = async () => {
     // BROADCAST OSC
 
     // Jitter of shape, from Calm
-    client.send('/beyond/master/livecontrol/fx4action', invertedCalm * 60, () => {});
+    client.send('/calm', invertedCalm, () => {});
 
     // Size of shape, from Focus
-    client.send('/beyond/master/livecontrol/size', focusValue > 65 ? focusValue : 65, () => {});
+    client.send('/focus', currentFocus, () => {});
 
     // Rotation of shape
     client.send('/beyond/master/livecontrol/rotoz', invertedCalm * 42, () => {});
@@ -165,4 +172,5 @@ const main = async () => {
 };
 
 main();
+
 
