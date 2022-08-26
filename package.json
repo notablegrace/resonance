@@ -1,6 +1,24 @@
 {
+  "name": "resonance",
+  "version": "1.0.0",
+  "description": "Brain magic ???",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "neurosity",
+    "notion",
+    "crown",
+    "eeg"
+  ],
+  "author": "Sam Stowers",
   "dependencies": {
-    "@neurosity/notion": "^5.17.0"
+    "@neurosity/notion": "^5.7.0",
+    "dotenv": "^15.0.0",
+    "node-osc": "^6.1.14",
+    "osc": "^2.4.2"
   }
 }
 
