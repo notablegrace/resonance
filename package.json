@@ -2,10 +2,10 @@
   "name": "resonance",
   "version": "1.0.0",
   "description": "Brain magic ???",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.ts"
   },
   "keywords": [
     "neurosity",
@@ -19,6 +19,8 @@
     "dotenv": "^15.0.0",
     "node-osc": "^6.1.14",
     "osc": "^2.4.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.2"
   }
 }
-

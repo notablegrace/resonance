@@ -44,7 +44,7 @@ const deviceId = process.env.DEVICE_ID || "";
 const email = process.env.EMAIL || "";
 const password = process.env.PASSWORD || "";
 
-const verifyEnvs = (email, password, deviceId) => {
+const verifyEnvs = (email: string, password: string, deviceId: string) => {
   const invalidEnv = (env) => {
     return env === "" || env === 0;
   };
@@ -88,29 +88,29 @@ const main = async () => {
   console.log("Logged in");
   
   // Subscribe to Calm and Focus levels, delivered once per second ish
-  notion.calm().subscribe((calm) => {
+  // notion.calm().subscribe((calm) => {
 
-    lastCalm = currentCalm
-    nextCalm = parseFloat(calm.probability.toFixed(4))
-    calmAnimFrame = 0
+  //   lastCalm = currentCalm
+  //   nextCalm = parseFloat(calm.probability.toFixed(4))
+  //   calmAnimFrame = 0
 
-    client.send('/calm', (-1 * (calm.probability.toFixed(3)*100)) + 100, () => {
-      // client.close();
-    });
+  //   client.send('/calm', (-1 * (calm.probability.toFixed(3)*100)) + 100, () => {
+  //     // client.close();
+  //   });
 
-    // Set lastCalm as whatever the current value is
-  });
-  notion.focus().subscribe((focus) => {
+  //   // Set lastCalm as whatever the current value is
+  // });
+  // notion.focus().subscribe((focus) => {
 
-    lastFocus = currentFocus
-    nextFocus = parseFloat(focus.probability.toFixed(4))
-    focusAnimFrame = 0
-    // console.log("from ", lastFocus, " to ", nextFocus)
+  //   lastFocus = currentFocus
+  //   nextFocus = parseFloat(focus.probability.toFixed(4))
+  //   focusAnimFrame = 0
+  //   // console.log("from ", lastFocus, " to ", nextFocus)
 
-    client.send('/focus', focus.probability.toFixed(3)*200, () => {
-      // client.close();
-    });
-  });
+  //   client.send('/focus', focus.probability.toFixed(3)*200, () => {
+  //     // client.close();
+  //   });
+  // });
   // notion.signalQuality().subscribe((signal) => {
   //   badSignal = signal < 0.7 THIS DOESN'T WORK, IT OUTPUTS AN ARRAY
   // })
@@ -138,10 +138,10 @@ const main = async () => {
     const animChangeInFocus = totalChangeInFocus * smoothedFocusAnimProgress
 
     currentCalm = currentCalm != nextCalm 
-      ? parseFloat((animChangeInCalm + parseFloat(lastCalm)).toFixed(4))
+      ? parseFloat((animChangeInCalm + lastCalm).toFixed(4))
       : currentCalm
     currentFocus = currentFocus != nextFocus 
-      ? parseFloat((animChangeInFocus + parseFloat(lastFocus)).toFixed(4))
+      ? parseFloat((animChangeInFocus + lastFocus).toFixed(4))
       : currentFocus
 
     const invertedCalm = -(currentCalm - 1) // invert for ease of use
@@ -168,7 +168,7 @@ const main = async () => {
     // client.send('/beyond/master/livecontrol/COLORREDWHATEVER', badSignal ? 1 : 0, () => {});
     // Ooooh, I could also have the crown vibrate in lil bursts w/haptics api
 
-  }, [950/refreshRate])
+  }, (950/refreshRate))
 };
 
 main();
