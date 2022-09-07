@@ -15,6 +15,13 @@ const refreshRate = 60; // How many times to send new values per second
 // const maxRotationSpeed = 0.5 // Slowed down per Calm value
 const movingAverageSampleSize: number = 2048;
 
+enum setting {
+  LEFT = "LEFT",
+  RIGHT = "RIGHT",
+  MIDDLE = "MIDDLE",
+}
+// do you want to sync brain waves to match left user, right user, or find common ground?
+
 // STATE
 // let lastCalm = 0 // Last value from EEG
 // let nextCalm = 0 // Next value from EEG
@@ -103,6 +110,7 @@ const main = async () => {
     });
   console.log("Logged in");
 
+  dumbdatachute();
   // Set up the hook to brainwaves. Raw brainwaves is 16 chunks of data per second
   notion.brainwaves("raw").subscribe((brainwaves) => {
     // Update arrays the moving averages are calculated from
@@ -127,6 +135,10 @@ const main = async () => {
     console.log(F5F6Balance);
 
     //
+
+    notion.brainwaves("powerByBand").subscribe((brainwaves) => {
+      console.log(brainwaves);
+    });
     //
   });
 
@@ -212,3 +224,109 @@ const main = async () => {
 };
 
 main();
+
+function find_separation(input: Array<number>, config: setting): Array<number> {
+  // input: powerByBand for each user
+  // calculate the separation between each user
+  // output: return target powerByBand for each user
+  return [];
+}
+
+function stimulate(target): Array<number> {
+  // input: target powerByBand for each user
+  // output: stimulus for each user
+  // auditory? visals?
+  return [];
+}
+
+function dumbdatachute() {
+  // simulates output of notion.brainwaves("powerByBand") for two headsets
+  setInterval(() => {
+    console.log(sample);
+  }, 1000);
+}
+
+/*  
+Channels names for each electrode
+    channelNames: [
+      'CP3', 'C3',
+      'F5',  'PO3',
+      'PO4', 'F6',
+      'C4',  'CP4'
+    ],
+
+  important channels to us: [0,5] (f5, f6)
+
+1. understand how to effectively stimulate brain: Sam + Grace
+2. understand targets and benefits of each target: Sam + Grace
+  a. frequency bands
+  b. electrodes
+  c. symmetry
+3. have code to calculate differential: Grace
+4. code brain stimulation: output OSC: Grace
+5. code brain stimulation: input stimulus: Sam
+
+*/
+
+var sample = [
+  {
+    label: "powerByBand",
+    data: {
+      alpha: [
+        0.4326838933650053, 0.7011913998347046, 1.3717684682104212,
+        0.4043711439234614, 0.4276277910286375, 0.7343967679911133,
+        0.4643529443786634, 0.5012185195340365,
+      ],
+      beta: [
+        1.0473270376446968, 0.6565360935142369, 0.9905849734272257,
+        0.4167252084581245, 0.5812834985846604, 0.9092642713573444,
+        0.9963075404421067, 1.0495665446734443,
+      ],
+      delta: [
+        0.46131690566460004, 1.0030278320362798, 0.8563781797682917,
+        0.2911634678359473, 0.5829804845703581, 0.6714666592936025,
+        0.37730719195446316, 1.0851178080710937,
+      ],
+      gamma: [
+        0.22648773160183822, 0.2171827127990081, 0.2626969784220435,
+        0.16349594919353772, 0.17327387900192714, 0.18990085940799623,
+        0.22908540295491436, 0.2537584109981627,
+      ],
+      theta: [
+        0.6434504807739541, 0.936240328507981, 0.8679595766147628,
+        0.23662065697316603, 0.6048174207817718, 0.816112075629094,
+        0.3367745804938397, 1.1043745310136739,
+      ],
+    },
+  },
+  {
+    label: "powerByBand",
+    data: {
+      alpha: [
+        0.4326838933650053, 0.7011913998347046, 1.3717684682104212,
+        0.4043711439234614, 0.4276277910286375, 0.7343967679911133,
+        0.4643529443786634, 0.5012185195340365,
+      ],
+      beta: [
+        1.0473270376446968, 0.6565360935142369, 0.9905849734272257,
+        0.4167252084581245, 0.5812834985846604, 0.9092642713573444,
+        0.9963075404421067, 1.0495665446734443,
+      ],
+      delta: [
+        0.46131690566460004, 1.0030278320362798, 0.8563781797682917,
+        0.2911634678359473, 0.5829804845703581, 0.6714666592936025,
+        0.37730719195446316, 1.0851178080710937,
+      ],
+      gamma: [
+        0.22648773160183822, 0.2171827127990081, 0.2626969784220435,
+        0.16349594919353772, 0.17327387900192714, 0.18990085940799623,
+        0.22908540295491436, 0.2537584109981627,
+      ],
+      theta: [
+        0.6434504807739541, 0.936240328507981, 0.8679595766147628,
+        0.23662065697316603, 0.6048174207817718, 0.816112075629094,
+        0.3367745804938397, 1.1043745310136739,
+      ],
+    },
+  },
+];

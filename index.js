@@ -58,6 +58,13 @@ var oscTargetPort = 6666;
 var refreshRate = 60; // How many times to send new values per second
 // const maxRotationSpeed = 0.5 // Slowed down per Calm value
 var movingAverageSampleSize = 2048;
+var setting;
+(function (setting) {
+    setting["LEFT"] = "LEFT";
+    setting["RIGHT"] = "RIGHT";
+    setting["MIDDLE"] = "MIDDLE";
+})(setting || (setting = {}));
+// do you want to sync brain waves to match left user, right user, or find common ground?
 // STATE
 // let lastCalm = 0 // Last value from EEG
 // let nextCalm = 0 // Next value from EEG
@@ -132,6 +139,7 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
             case 1:
                 _a.sent();
                 console.log("Logged in");
+                dumbdatachute();
                 // Set up the hook to brainwaves. Raw brainwaves is 16 chunks of data per second
                 notion.brainwaves("raw").subscribe(function (brainwaves) {
                     // Update arrays the moving averages are calculated from
@@ -144,6 +152,9 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
                     var F5F6Balance = movingAverageF5 / movingAverageF6;
                     console.log(F5F6Balance);
                     //
+                    notion.brainwaves("powerByBand").subscribe(function (brainwaves) {
+                        console.log(brainwaves);
+                    });
                     //
                 });
                 mainInterval = setInterval(function () {
@@ -188,3 +199,75 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
     });
 }); };
 main();
+function find_separation(input, config) {
+    // input: powerByBand for each user
+    // calculate the separation between each user
+    // output: return target powerByBand for each user
+    return [];
+}
+function stimulate(target) {
+    // input: target powerByBand for each user
+    // output: stimulus for each user
+    // auditory? visals? 
+    return [];
+}
+function dumbdatachute() {
+    setInterval(function () {
+        console.log(sample);
+    }, 1000);
+}
+var sample = {
+    label: 'powerByBand',
+    data: {
+        alpha: [
+            0.4326838933650053,
+            0.7011913998347046,
+            1.3717684682104212,
+            0.4043711439234614,
+            0.4276277910286375,
+            0.7343967679911133,
+            0.4643529443786634,
+            0.5012185195340365
+        ],
+        beta: [
+            1.0473270376446968,
+            0.6565360935142369,
+            0.9905849734272257,
+            0.4167252084581245,
+            0.5812834985846604,
+            0.9092642713573444,
+            0.9963075404421067,
+            1.0495665446734443
+        ],
+        delta: [
+            0.46131690566460004,
+            1.0030278320362798,
+            0.8563781797682917,
+            0.2911634678359473,
+            0.5829804845703581,
+            0.6714666592936025,
+            0.37730719195446316,
+            1.0851178080710937
+        ],
+        gamma: [
+            0.22648773160183822,
+            0.2171827127990081,
+            0.2626969784220435,
+            0.16349594919353772,
+            0.17327387900192714,
+            0.18990085940799623,
+            0.22908540295491436,
+            0.2537584109981627
+        ],
+        theta: [
+            0.6434504807739541,
+            0.936240328507981,
+            0.8679595766147628,
+            0.23662065697316603,
+            0.6048174207817718,
+            0.816112075629094,
+            0.3367745804938397,
+            1.1043745310136739
+        ]
+    }
+};
