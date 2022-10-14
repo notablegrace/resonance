@@ -51,6 +51,8 @@ function updateMovingAverageData(
   }
 }
 
+// sample https://photos.app.goo.gl/sFHT113jH7ogcC8i6
+
 const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 let badSignal = false;
