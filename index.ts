@@ -2,12 +2,6 @@ const { Notion } = require("@neurosity/notion");
 const { Client } = require("node-osc");
 require("dotenv").config();
 
-// TODO
-// Have size adjust in a range, to avoid getting too small / hitting eyes
-// Fix the occasional glitches (from OSC? From laser? I need to know)
-// Scaling the jitter size to account for the projection size
-// If signal quality below a threshold, make everything red
-
 // CONFIG
 const oscTargetIP: string = "192.168.1.163"; // Make this IP of machine I'm sending to
 const oscTargetPort: number = 6666;
@@ -41,13 +35,6 @@ const freqs = [
 
 // do you want to sync brain waves to match left user, right user, or find common ground?
 
-// STATE
-// let lastCalm = 0 // Last value from EEG
-// let nextCalm = 0 // Next value from EEG
-// let currentCalm = 0 // Value in animation
-// let lastFocus = 0
-// let nextFocus = 0
-// let currentFocus = 0
 let rawMovingAverageF5: Array<number> = [];
 let rawMovingAverageF6: Array<number> = [];
 
@@ -69,9 +56,6 @@ function updateMovingAverageData(
     return [...existingData.slice(16), ...newData];
   }
 }
-
-// sample https://photos.app.goo.gl/sFHT113jH7ogcC8i6
-
 const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 let badSignal = false;
@@ -147,8 +131,11 @@ const main = async () => {
     const F5F6Balance = movingAverageF5 / movingAverageF6;
 
     // console.log(F5F6Balance);
-
   });
+  let smrAmplitudes = [];
+  let thetaAmplitudes = [];
+  let smrThreshold = 0; // mV
+  let thetaThreshold = 10; // mV
 
   notion.brainwaves("psd").subscribe((brainwaves) => {
     const smrAmplitude = get_amplitude(
@@ -161,11 +148,33 @@ const main = async () => {
       [electrode.C3, electrode.C4],
       [4, 6]
     );
-      
-    console.log('smrAmplitude', smrAmplitude);
-    console.log('thetaAmplitude', thetaAmplitude);
-  })
+    smrAmplitudes.push(smrAmplitude);
+    thetaAmplitudes.push(thetaAmplitude);
+    if (smrAmplitudes.length == 3) {
+      const smrAverage = average(smrAmplitudes);
+      const thetaAverage = average(thetaAmplitudes);
+      if (smrAverage > smrThreshold && thetaAverage < thetaThreshold) {
+        smrThreshold = smrAverage + 0.1;
+        thetaThreshold = thetaAverage - 0.1;
+        reward(true);
+      } else {
+        reward(false);
+      }
+    }
 
+    console.log("smrAmplitude", smrAmplitude);
+    console.log("thetaAmplitude", thetaAmplitude);
+  });
+
+  function reward(yes: boolean) {
+    if (yes) {
+      console.log("reward");
+      client.send("/reward", 1, () => {});
+    } else {
+      console.log("no reward");
+      client.send("/reward", 0, () => {});
+    }
+  }
   // Subscribe to Calm and Focus levels, delivered once per second ish
   // notion.calm().subscribe((calm) => {
 
@@ -287,7 +296,6 @@ function get_amplitude(
   target_freqs: number[]
 ) {
   let frequency_indexes = [];
-
   target_freqs.forEach((x) => {
     frequency_indexes.push(freqs.indexOf(x));
   });
@@ -512,14 +520,6 @@ var sample_transformed_data = {
 };
 
 /*  
-Channels names for each electrode
-    channelNames: [
-      'CP3', 'C3',
-      'F5',  'PO3',
-      'PO4', 'F6',
-      'C4',  'CP4'
-    ],
-
   important channels to us: [0,5] (f5, f6)
 
 1. understand how to effectively stimulate brain: Sam + Grace
@@ -533,14 +533,6 @@ Channels names for each electrode
 6. display signal quality feedback. see https://docs.neurosity.co/docs/reference/#channelquality  
   and maybe this too https://github.com/neurosity/notion-js/blob/master/src/Notion.ts#L791 
   and this https://github.com/neurosity/eeg-pipes#sample 
-
-
-
-  fourier transform data
-
-  activity within frequency band
-
-
 */
 
 var sample = [
