@@ -134,6 +134,8 @@ const main = async () => {
   });
   let smrAmplitudes = [];
   let thetaAmplitudes = [];
+  let succeededSmrCount = 0;
+  let succeededThetaCount = 0;
   let smrThreshold = 0; // mV
   let thetaThreshold = 10; // mV
 
@@ -148,22 +150,41 @@ const main = async () => {
       [electrode.C3, electrode.C4],
       [4, 6]
     );
+
     smrAmplitudes.push(smrAmplitude);
     thetaAmplitudes.push(thetaAmplitude);
-    if (smrAmplitudes.length == 3) {
+    succeededSmrCount += smrAmplitude > smrThreshold ? 1 : 0;
+    succeededThetaCount += thetaAmplitude < thetaThreshold ? 1 : 0;
+
+    if (smrAmplitudes.length == 4) {
       const smrAverage = average(smrAmplitudes);
       const thetaAverage = average(thetaAmplitudes);
-      if (smrAverage > smrThreshold && thetaAverage < thetaThreshold) {
-        smrThreshold = smrAverage + 0.1;
-        thetaThreshold = thetaAverage - 0.1;
+      smrThreshold = smrAverage + 0.001;
+      thetaThreshold = thetaAverage - 0.001;
+      if (succeededSmrCount >= 3 && succeededThetaCount >= 3) {
         reward(true);
       } else {
         reward(false);
       }
+      smrAmplitudes = [];
+      thetaAmplitudes = [];
+      succeededSmrCount = 0;
+      succeededThetaCount = 0;
+      console.log("===========");
+      console.log("REWARD GIVEN: ", succeededSmrCount >= 3 && succeededThetaCount >= 3);
+      console.log("===========");
     }
 
+    console.log("=========== BLOCK ===========");
     console.log("smrAmplitude", smrAmplitude);
+    console.log("smrThreshold", smrThreshold);
+    console.log("exceeds smr threshold: ", smrAmplitude > smrThreshold);
     console.log("thetaAmplitude", thetaAmplitude);
+    console.log("thetaThreshold", thetaThreshold);
+    console.log("below theta threshold: ", smrAmplitude > smrThreshold);
+    console.log("=========== END BLOCK ===========");
+
+
   });
 
   function reward(yes: boolean) {
