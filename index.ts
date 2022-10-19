@@ -81,13 +81,6 @@ let focusAnimFrame = 0; // On a scale of 0 to refreshRate
 let currentRotation = 0; // Scale of 0-100
 
 const client = new Client(oscTargetIP, oscTargetPort);
-// Sophy's laser controller IP is 192.168.1.162
-// const client = new Client('127.0.0.1', 3333); (my own IP)
-// Size control OSC path: /beyond/master/livecontrol/size
-// Size control OSC path: /beyond/master/livecontrol/size
-// Size is controlled via integers between 1-200
-// Fx controlled via integers 1-100
-// /beyond/master/livecontrol/fx1action
 
 // Neurosity setup
 const deviceId = process.env.DEVICE_ID || "";
@@ -153,15 +146,25 @@ const main = async () => {
     // Calculate symmetry between F5 and F6
     const F5F6Balance = movingAverageF5 / movingAverageF6;
 
-    console.log(F5F6Balance);
+    // console.log(F5F6Balance);
 
-    //
-
-    notion.brainwaves("powerByBand").subscribe((brainwaves) => {
-      console.log(brainwaves);
-    });
-    //
   });
+
+  notion.brainwaves("psd").subscribe((brainwaves) => {
+    const smrAmplitude = get_amplitude(
+      brainwaves.psd,
+      [electrode.C3, electrode.C4],
+      [12, 14]
+    );
+    const thetaAmplitude = get_amplitude(
+      brainwaves.psd,
+      [electrode.C3, electrode.C4],
+      [4, 6]
+    );
+      
+    console.log('smrAmplitude', smrAmplitude);
+    console.log('thetaAmplitude', thetaAmplitude);
+  })
 
   // Subscribe to Calm and Focus levels, delivered once per second ish
   // notion.calm().subscribe((calm) => {
@@ -262,20 +265,20 @@ function stimulate(target): Array<number> {
 
 function smartdatachute() {
   // simulates output of notion.brainwaves("powerByBand") for two headsets
-  setInterval(() => {
-    console.log(
-      get_amplitude(
-        sample_transformed_data.psd,
-        [electrode.C3, electrode.C4],
-        [12, 14]
-      ),
-      get_amplitude(
-        sample_transformed_data.psd,
-        [electrode.C3, electrode.C4],
-        [4, 6]
-      )
-    );
-  }, 1000);
+  // setInterval(() => {
+  //   console.log(
+  //     get_amplitude(
+  //       sample_transformed_data.psd,
+  //       [electrode.C3, electrode.C4],
+  //       [12, 14]
+  //     ),
+  //     get_amplitude(
+  //       sample_transformed_data.psd,
+  //       [electrode.C3, electrode.C4],
+  //       [4, 6]
+  //     )
+  //   );
+  // }, 1000);
 }
 
 function get_amplitude(
