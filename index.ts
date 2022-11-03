@@ -134,6 +134,8 @@ const main = async () => {
   });
   let smrAmplitudes = [];
   let thetaAmplitudes = [];
+  let baselineSmrAmplitudes = [];
+  let baselineThetaAmplitudes = [];
   let succeededSmrCount = 0;
   let succeededThetaCount = 0;
   let smrThreshold = 0; // mV
@@ -153,6 +155,8 @@ const main = async () => {
 
     smrAmplitudes.push(smrAmplitude);
     thetaAmplitudes.push(thetaAmplitude);
+    baselineSmrAmplitudes.push(smrAmplitude);
+    baselineThetaAmplitudes.push(thetaAmplitude);
     succeededSmrCount += smrAmplitude > smrThreshold ? 1 : 0;
     succeededThetaCount += thetaAmplitude < thetaThreshold ? 1 : 0;
 
@@ -166,13 +170,18 @@ const main = async () => {
       } else {
         reward(false);
       }
+      console.log("===========");
+      console.log("REWARD GIVEN: ", succeededSmrCount >= 3 && succeededThetaCount >= 3);
+      console.log("Total baseline smr amplitude: ", average(baselineSmrAmplitudes));
+      console.log("Total baseline theta amplitude: ", average(baselineThetaAmplitudes));
+      console.log("succeededSmrCount: ", succeededSmrCount);
+      console.log("succeededThetaCount: ", succeededThetaCount);
+      console.log("===========");
+
       smrAmplitudes = [];
       thetaAmplitudes = [];
       succeededSmrCount = 0;
       succeededThetaCount = 0;
-      console.log("===========");
-      console.log("REWARD GIVEN: ", succeededSmrCount >= 3 && succeededThetaCount >= 3);
-      console.log("===========");
     }
 
     console.log("=========== BLOCK ===========");

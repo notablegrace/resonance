@@ -133,7 +133,7 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
             client.send("/reward", 0, function () { });
         }
     }
-    var smrAmplitudes, thetaAmplitudes, succeededSmrCount, succeededThetaCount, smrThreshold, thetaThreshold, mainInterval;
+    var smrAmplitudes, thetaAmplitudes, baselineSmrAmplitudes, baselineThetaAmplitudes, succeededSmrCount, succeededThetaCount, smrThreshold, thetaThreshold, mainInterval;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, notion
@@ -162,6 +162,8 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
                 });
                 smrAmplitudes = [];
                 thetaAmplitudes = [];
+                baselineSmrAmplitudes = [];
+                baselineThetaAmplitudes = [];
                 succeededSmrCount = 0;
                 succeededThetaCount = 0;
                 smrThreshold = 0;
@@ -171,6 +173,8 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
                     var thetaAmplitude = get_amplitude(brainwaves.psd, [electrode.C3, electrode.C4], [4, 6]);
                     smrAmplitudes.push(smrAmplitude);
                     thetaAmplitudes.push(thetaAmplitude);
+                    baselineSmrAmplitudes.push(smrAmplitude);
+                    baselineThetaAmplitudes.push(thetaAmplitude);
                     succeededSmrCount += smrAmplitude > smrThreshold ? 1 : 0;
                     succeededThetaCount += thetaAmplitude < thetaThreshold ? 1 : 0;
                     if (smrAmplitudes.length == 4) {
@@ -184,13 +188,17 @@ var main = function () { return __awaiter(_this, void 0, void 0, function () {
                         else {
                             reward(false);
                         }
+                        console.log("===========");
+                        console.log("REWARD GIVEN: ", succeededSmrCount >= 3 && succeededThetaCount >= 3);
+                        console.log("Total baseline smr amplitude: ", average(baselineSmrAmplitudes));
+                        console.log("Total baseline theta amplitude: ", average(baselineThetaAmplitudes));
+                        console.log("succeededSmrCount: ", succeededSmrCount);
+                        console.log("succeededThetaCount: ", succeededThetaCount);
+                        console.log("===========");
                         smrAmplitudes = [];
                         thetaAmplitudes = [];
                         succeededSmrCount = 0;
                         succeededThetaCount = 0;
-                        console.log("===========");
-                        console.log("REWARD GIVEN: ", succeededSmrCount >= 3 && succeededThetaCount >= 3);
-                        console.log("===========");
                     }
                     console.log("=========== BLOCK ===========");
                     console.log("smrAmplitude", smrAmplitude);
