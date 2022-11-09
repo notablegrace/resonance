@@ -1,4 +1,4 @@
-import { smartdatachute } from "./test_data";
+import { smartdatachute } from "./simulator";
 import { authenticate, deviceId } from "./utils/authentication";
 
 const { Notion } = require("@neurosity/notion");
