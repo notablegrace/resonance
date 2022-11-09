@@ -17,11 +17,12 @@
   "author": "Sam Stowers",
   "dependencies": {
     "@neurosity/notion": "^5.7.0",
-    "dotenv": "^15.0.0",
+    "dotenv": "^15.0.1",
     "node-osc": "^6.1.14",
     "osc": "^2.4.2"
   },
   "devDependencies": {
+    "nodemon": "^2.0.20",
     "prettier": "2.7.1",
     "typescript": "^4.8.2"
   }

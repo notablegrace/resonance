@@ -1,6 +1,7 @@
 import { oscTargetIP, oscTargetPort } from "../config";
 
 const { Client } = require("node-osc");
+require("dotenv").config();
 
 export const client = new Client(oscTargetIP, oscTargetPort);
 
@@ -17,10 +18,9 @@ export const verifyEnvs = (
     return value === "";
   };
   if (invalidValue(email) || invalidValue(password) || invalidValue(deviceId)) {
-    console.error(
+    throw new Error(
       "Please verify deviceId, email and password are in .env file, quitting..."
     );
-    process.exit(0);
   }
 };
 

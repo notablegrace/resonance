@@ -21,11 +21,11 @@ export function get_amplitude(
   electrodes: electrode[],
   target_freqs: number[]
 ) {
-  let frequency_indexes = [];
+  const frequency_indexes = [];
   target_freqs.forEach((x) => {
     frequency_indexes.push(freqs.indexOf(x));
   });
-  let collected_amplitudes = [];
+  const collected_amplitudes = [];
 
   electrodes.forEach((electrode) => {
     const electrode_amplitudes = target_freqs.reduce((acc, freq) => {
