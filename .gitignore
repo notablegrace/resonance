@@ -1,6 +1,6 @@
-node_modules
-.env
 .DS_Store
+.env
 .sample_data.json
 *.js
-dist/*
+dist
+node_modules
