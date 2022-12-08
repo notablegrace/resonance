@@ -1,6 +1,6 @@
 import { electrode, freqs, setting } from "../config";
 
-const average = (array) => array.reduce((a, b) => a + b) / array.length;
+export const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 export function easeInOutSine(x) {
   return -(Math.cos(Math.PI * x) - 1) / 2;
