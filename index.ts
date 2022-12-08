@@ -1,5 +1,6 @@
-import { smartdatachute } from "./simulator";
+// import { smartdatachute } from "./simulator";
 import { authenticate, deviceId } from "./utils/authentication";
+import { smrConditioning } from "./utils/smrConditioning";
 
 const { Notion } = require("@neurosity/notion");
 const main = async () => {
@@ -7,7 +8,8 @@ const main = async () => {
     deviceId,
   });
   authenticate(notion);
-  smartdatachute();
+  // smartdatachute();
+  smrConditioning(notion);
 };
 
 main();

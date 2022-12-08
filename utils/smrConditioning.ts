@@ -1,13 +1,11 @@
 import { Notion } from "@neurosity/notion";
-import { deviceId } from "./authentication";
-
-const {
+import { client } from "./authentication";
+import {
   average,
   get_amplitude,
   reward,
-  authenticate,
-} = require("./utils/functions");
-const { electrode } = require("config.ts");
+} from "./functions";
+import { electrode } from "../config";
 
 let smrAmplitudes = [];
 let thetaAmplitudes = [];
@@ -18,11 +16,7 @@ let succeededThetaCount = 0;
 let smrThreshold = 0; // mV
 let thetaThreshold = 10; // mV
 
-export const smrConditioning = async () => {
-  const notion = new Notion({
-    deviceId,
-  });
-  authenticate(notion);
+export const smrConditioning = async (notion: Notion) => {
   notion.brainwaves("psd").subscribe((brainwaves) => {
     if (!("psd" in brainwaves)) {
       throw Error;
@@ -52,9 +46,9 @@ export const smrConditioning = async () => {
       smrThreshold = smrAverage + 0.001;
       thetaThreshold = thetaAverage - 0.001;
       if (succeededSmrCount >= 3 && succeededThetaCount >= 3) {
-        reward(true);
+        reward(client, true);
       } else {
-        reward(false);
+        reward(client, false);
       }
       console.log("===========");
       console.log(
