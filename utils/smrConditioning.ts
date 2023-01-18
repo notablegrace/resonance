@@ -1,11 +1,7 @@
 import { Notion } from "@neurosity/notion";
 import { client } from "./authentication";
-import {
-  average,
-  get_amplitude,
-  reward,
-} from "./functions";
-import { electrode } from "../config";
+import { average, getAmplitude, reward } from "./functions";
+import { Electrode } from "../config";
 
 let smrAmplitudes = [];
 let thetaAmplitudes = [];
@@ -21,14 +17,14 @@ export const smrConditioning = async (notion: Notion) => {
     if (!("psd" in brainwaves)) {
       throw Error;
     }
-    const smrAmplitude = get_amplitude(
+    const smrAmplitude = getAmplitude(
       brainwaves.psd,
-      [electrode.C3, electrode.C4],
+      [Electrode.C3, Electrode.C4],
       [12, 14]
     );
-    const thetaAmplitude = get_amplitude(
+    const thetaAmplitude = getAmplitude(
       brainwaves.psd,
-      [electrode.C3, electrode.C4],
+      [Electrode.C3, Electrode.C4],
       [4, 6]
     );
 

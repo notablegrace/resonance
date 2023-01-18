@@ -1,4 +1,4 @@
-import { electrode, freqs, setting } from "../config";
+import { Electrode, Frequency, Setting } from "../config";
 
 export const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
@@ -7,48 +7,55 @@ export function easeInOutSine(x) {
 }
 
 export function reward(client, yes: boolean) {
+  /* 
+    Whether or not to reward the user
+    yes: boolean
+    client: osc client
+  */
   if (yes) {
-    console.log("reward");
+    console.log("rewarding");
     client.send("/reward", 1, () => {});
   } else {
-    console.log("no reward");
+    console.log("not rewarding");
     client.send("/reward", 0, () => {});
   }
 }
 
-export function get_amplitude(
+export function getAmplitude(
   psd: Array<number[]>,
-  electrodes: electrode[],
-  target_freqs: number[]
+  Electrodes: Electrode[],
+  targetFrequencies: number[]
 ) {
-  const frequency_indexes = [];
-  target_freqs.forEach((x) => {
-    frequency_indexes.push(freqs.indexOf(x));
+  const frequencyIndexes = [];
+  targetFrequencies.forEach((x) => {
+    frequencyIndexes.push(Frequency.indexOf(x));
   });
-  const collected_amplitudes = [];
+  const collectedAmplitudes = [];
 
-  electrodes.forEach((electrode) => {
-    const electrode_amplitudes = target_freqs.reduce((acc, freq) => {
-      return psd[electrode][freq] + acc;
+  Electrodes.forEach((Electrode) => {
+    const ElectrodeAmplitudes = targetFrequencies.reduce((acc, freq) => {
+      return psd[Electrode][freq] + acc;
     });
 
-    const electrode_amplitudes_avg = electrode_amplitudes / target_freqs.length;
+    const ElectrodeAmplitudesAverage =
+      ElectrodeAmplitudes / targetFrequencies.length;
 
-    collected_amplitudes.push(electrode_amplitudes_avg);
+    collectedAmplitudes.push(ElectrodeAmplitudesAverage);
   });
 
   return (
-    collected_amplitudes.reduce((a, b) => a + b) / collected_amplitudes.length
+    collectedAmplitudes.reduce((a, b) => a + b) / collectedAmplitudes.length
   );
 }
 
 export function find_separation(
   input: Array<number>,
-  config: setting
+  config: Setting
 ): Array<number> {
   // input: powerByBand for each user
   // calculate the separation between each user
   // output: return target powerByBand for each user
+  // config: setting
   return [];
 }
 
